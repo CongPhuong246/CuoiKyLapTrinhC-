@@ -1,0 +1,100 @@
+﻿@using PagedList
+@using PagedList.Mvc
+@model PagedList.IPagedList<ModelEF.Model.SanPham>
+@{
+    ViewBag.Title = "Quản Lý Sản Phẩm";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+@section header{
+    <i class="fa fa-user"></i>&nbsp;Quản Lý Sản Phẩm}
+
+@using (Html.BeginForm("Index", "SanPham", FormMethod.Post))
+{
+    <div class="col-lg-12 form-group">
+        <div class="col-md-6">
+            @Html.ActionLink("Tạo mới", "Create", "SanPham", new { @class = "btn btn-danger" })
+        </div>
+        <div class="col-md-4">
+            <input type="text" value="@ViewBag.SearchString" name="searchString" placeholder="Nhập từ khoá tìm kiếm" class="form-control" />
+        </div>
+        <div class="col-md-2">
+            <input type="submit" value="Tìm kiếm" class="btn btn-primary" />
+        </div>
+    </div>
+
+}
+<div class="col-lg-12 form-group">
+    <table class="table">
+        <tr>
+            <th>
+                STT
+            </th>
+            <th>
+                Mã Sản Phẩm
+            </th>
+            <th>
+                Tên Sản Phẩm
+            </th>
+            <th>
+                Đơn Vị Tính
+            </th>
+            <th>
+                Giá
+            </th>
+            <th>
+                Số lượng
+            </th>
+            <th>
+                Mã Loại SP
+            </th>
+            <th>
+                Thao tác
+            </th>
+            <th></th>
+            
+        </tr>
+        @{ var i = 1;}
+
+        @foreach (var item in Model)
+        {
+    <tr id="row_@item.MaSP">
+        <td>@i</td>
+        <td>
+            @item.MaSP
+        </td>
+        <td>
+            @item.TenSP
+        </td>
+        <td>
+            @item.Donvitinh
+        </td>
+        <td>
+            @System.String.Format("{0:0,000 Đ}", @item.Dongia)
+        </td>
+        <td>
+            @item.Soluong
+        </td>
+        <td>
+            @item.MaLoaiSP
+        </td>
+        <td>
+            <a href="~/Admin/SanPham/Chitiet/@item.MaSP"><i class="fa fa-edit"></i>Xem chi tiết </a>
+        </td>
+        <td>
+                @Ajax.ActionLink(" ", "Delete", new { @id = item.MaSP }, new AjaxOptions
+                   {
+                       Confirm = "Bạn có muốn xoá sản phẩm này?",
+                       OnComplete = "$('#row_" + @item.MaSP + "').remove()",
+                       HttpMethod = "Delete"
+                   }, new { @class = "glyphicon glyphicon-trash" })
+            
+        </td>
+
+    </tr>
+            i++;
+        }
+
+    </table>
+    @Html.PagedListPager((IPagedList)Model, page => Url.Action("Index", new { page, @searchString = ViewBag.SearchString }))
+</div>
